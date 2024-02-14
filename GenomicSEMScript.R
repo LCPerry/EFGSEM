@@ -5,27 +5,27 @@ setwd("~/SummaryStatistics/")
 
 Ibrahim_Stroop3 <- fread('~/SummaryStatistics/IbrahimSumstats/ExecutiveGWAS_Hapmap/Stroop3_45agesex_IV.csv.gz')
 Ibrahim_DSST <- fread('~/SummaryStatistics/IbrahimSumstats/ExecutiveGWAS_Hapmap/DSST_45agesex_effN.txt.gz')
-Hatoum_Trails <- fread('~/SummaryStatistics/HatoumSumstats/GCT90179118/GCST90179118_buildGRCh37.tsv')
-Hatoum_Pairs <- fread('~/SummaryStatistics/HatoumSumstats/GCST90179117/GCST90179117_buildGRCh37.tsv')
-Hatoum_SDST <- fread('~/SummaryStatistics/HatoumSumstats/GCST90179119/GCST90179119_buildGRCh37.tsv')
-Hatoum_Digit <- fread('~/SummaryStatistics/HatoumSumstats/GCST90179120/GCST90179120_buildGRCh37.tsv')
-Hatoum_Memory <- fread('~/SummaryStatistics/HatoumSumstats/GCST90179116/GCST90179116_buildGRCh37.tsv')
+Haroum_Trails <- fread('~/SummaryStatistics/HaroumSumstats/GCT90179118/GCST90179118_buildGRCh37.tsv')
+Haroum_Pairs <- fread('~/SummaryStatistics/HaroumSumstats/GCST90179117/GCST90179117_buildGRCh37.tsv')
+Haroum_SDST <- fread('~/SummaryStatistics/HaroumSumstats/GCST90179119/GCST90179119_buildGRCh37.tsv')
+Haroum_Digit <- fread('~/SummaryStatistics/HaroumSumstats/GCST90179120/GCST90179120_buildGRCh37.tsv')
+Haroum_Memory <- fread('~/SummaryStatistics/HaroumSumstats/GCST90179116/GCST90179116_buildGRCh37.tsv')
 Donati_WM <- fread('~/SummaryStatistics/DonatiSumstats/Working_Memory.txt')
 
-colnames(Hatoum_Trails)[6] <- 'SE'
-colnames(Hatoum_Pairs)[6] <- 'SE'
-colnames(Hatoum_SDST)[6] <- 'SE'
-colnames(Hatoum_Digit)[6] <- 'SE'
-colnames(Hatoum_Memory)[6] <- 'SE'
+colnames(Haroum_Trails)[6] <- 'SE'
+colnames(Haroum_Pairs)[6] <- 'SE'
+colnames(Haroum_SDST)[6] <- 'SE'
+colnames(Haroum_Digit)[6] <- 'SE'
+colnames(Haroum_Memory)[6] <- 'SE'
 colnames(Donati_WM) <- c( "alternate_ids","rsid","chromosome","position","A2","A1","info","all_maf","missing_data_proportion","pvalue","add_info","effect","SE")
 Ibrahim_Stroop3$Zscore <- (Ibrahim_Stroop3$Zscore)*(-1)
-Hatoum_Pairs$beta <- (Hatoum_Pairs$beta)*(-1)
+Haroum_Pairs$beta <- (Haroum_Pairs$beta)*(-1)
 
-write.table(Hatoum_Trails, file = 'Hatoum_Trails.txt')
-write.table(Hatoum_Pairs, file = 'Hatoum_Pairs.txt')
-write.table(Hatoum_SDST, file = 'Hatoum_SDST.txt')
-write.table(Hatoum_Digit, file = 'Hatoum_Digit.txt')
-write.table(Hatoum_Memory, file = 'Hatoum_Memory.txt')
+write.table(Haroum_Trails, file = 'Haroum_Trails.txt')
+write.table(Haroum_Pairs, file = 'Haroum_Pairs.txt')
+write.table(Haroum_SDST, file = 'Haroum_SDST.txt')
+write.table(Haroum_Digit, file = 'Haroum_Digit.txt')
+write.table(Haroum_Memory, file = 'Haroum_Memory.txt')
 write.table(Ibrahim_DSST, file = 'Ibrahim_DSST.txt')
 write.table(Ibrahim_Stroop3, file = 'Ibrahim_Stroop3.txt')
 write.table(Donati_WM, file = 'Donati_WM.txt')
@@ -33,9 +33,9 @@ write.table(Donati_WM, file = 'Donati_WM.txt')
 #Use SSRTBedopsCleaningScript to obtain the file for the Stop Signal task
 
 # Munge
-files<-c('Hatoum_Trails.txt', 'Hatoum_Pairs.txt', 'Hatoum_SDST.txt', 'Hatoum_Digit.txt','Hatoum_Memory.txt', 'Ibrahim_Stroop3.txt', 'Ibrahim_DSST.txt', 'Donati_WM.txt','Arnat_SSRT.txt')
+files<-c('Haroum_Trails.txt', 'Haroum_Pairs.txt', 'Haroum_SDST.txt', 'Haroum_Digit.txt','Haroum_Memory.txt', 'Ibrahim_Stroop3.txt', 'Ibrahim_DSST.txt', 'Donati_WM.txt','Arnat_SSRT.txt')
 hm3<-"reference.1000G.maf.0.005.txt"
-trait.names<-c('Hatoum_Trails','Hatoum_Pairs','Hatoum_SDST','Hatoum_Digit','Hatoum_Memory','Ibrahim_Stroop3','Ibrahim_DSST' ,'Donati_WM','Arnat_SSRT')
+trait.names<-c('Haroum_Trails','Haroum_Pairs','Haroum_SDST','Haroum_Digit','Haroum_Memory','Ibrahim_Stroop3','Ibrahim_DSST' ,'Donati_WM','Arnat_SSRT')
 N=c(93024,81701,84125,81701,162335,12866,32070,4611,11715)
 info.filter=0.9
 maf.filter=0.01
@@ -44,12 +44,12 @@ munge(files=files,hm3=hm3,trait.names=trait.names,N=N,info.filter=info.filter,ma
 
 #Executive Function LDSC
 
-traits<-c('Hatoum_Trails.sumstats.gz', 'Hatoum_Pairs.sumstats.gz', 'Hatoum_SDST.sumstats.gz', 'Hatoum_Digit.sumstats.gz','Hatoum_Memory.sumstats.gz', "Ibrahim_Stroop3.sumstats.gz", 'Ibrahim_DSST.sumstats.gz','Donati_WM.sumstats.gz','Arnat_SSRT.sumstats.gz')
+traits<-c('Haroum_Trails.sumstats.gz', 'Haroum_Pairs.sumstats.gz', 'Haroum_SDST.sumstats.gz', 'Haroum_Digit.sumstats.gz','Haroum_Memory.sumstats.gz', "Ibrahim_Stroop3.sumstats.gz", 'Ibrahim_DSST.sumstats.gz','Donati_WM.sumstats.gz','Arnat_SSRT.sumstats.gz')
 sample.prev<-c(NA,NA,NA,NA,NA,NA,NA,NA)
 population.prev<-c(NA,NA,NA,NA,NA,NA,NA,NA)
 ld<-"eur_w_ld_chr/"
 wld<-"eur_w_ld_chr/"
-trait.names<-c('Hatoum_Trails','Hatoum_Pairs','Hatoum_SDST','Hatoum_Digit','Hatoum_Memory', "Ibrahim_Stroop3", 'Ibrahim_DSST','Donati_WM','Arnat_SSRT')
+trait.names<-c('Haroum_Trails','Haroum_Pairs','Haroum_SDST','Haroum_Digit','Haroum_Memory', "Ibrahim_Stroop3", 'Ibrahim_DSST','Donati_WM','Arnat_SSRT')
 
 LDSCoutput<-ldsc(traits=traits,sample.prev=sample.prev,population.prev=population.prev,ld=ld,wld=wld,trait.names=trait.names)
 save(LDSCoutput,file="EFLDSCoutput.RData")
@@ -64,12 +64,12 @@ CommonFactor_DWLS$results
 # CFA
 # Accepted Model, SS=IC
 
-cEF <- 'SS =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs + Ibrahim_Stroop3 + Hatoum_Memory
-        WM =~ NA*Donati_WM + Hatoum_Digit
-        RT =~ NA*Hatoum_SDST + Ibrahim_DSST
-        Donati_WM ~~ Hatoum_Memory
+cEF <- 'SS =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs + Ibrahim_Stroop3 + Haroum_Memory
+        WM =~ NA*Donati_WM + Haroum_Digit
+        RT =~ NA*Haroum_SDST + Ibrahim_DSST
+        Donati_WM ~~ Haroum_Memory
         SS ~~ 0*RT
-        Hatoum_SDST ~~ a*Hatoum_SDST
+        Haroum_SDST ~~ a*Haroum_SDST
         a > .001
         
 ' 
@@ -79,13 +79,13 @@ EF$results
 
 
 # Three Factor
-cEF <- 'SS =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs
-        WM =~ NA*Donati_WM + Hatoum_Digit
-        RT =~ NA*Hatoum_SDST + Ibrahim_DSST
-        IC =~ NA*Ibrahim_Stroop3 + Hatoum_Memory
-        Donati_WM ~~ Hatoum_Memory
+cEF <- 'SS =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs
+        WM =~ NA*Donati_WM + Haroum_Digit
+        RT =~ NA*Haroum_SDST + Ibrahim_DSST
+        IC =~ NA*Ibrahim_Stroop3 + Haroum_Memory
+        Donati_WM ~~ Haroum_Memory
         SS ~~ 0*RT
-        Hatoum_SDST ~~ a*Hatoum_SDST
+        Haroum_SDST ~~ a*Haroum_SDST
         a > .001
         
 ' 
@@ -94,11 +94,11 @@ EF$modelfit
 EF$results
 
 # NO RT
-cEF <- 'SS =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs
-        WM =~ NA*Donati_WM + Hatoum_Digit
-        IC =~ NA*Ibrahim_Stroop3 + Hatoum_Memory
-        Donati_WM ~~ Hatoum_Memory
-        Hatoum_SDST ~~ a*Hatoum_SDST
+cEF <- 'SS =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs
+        WM =~ NA*Donati_WM + Haroum_Digit
+        IC =~ NA*Ibrahim_Stroop3 + Haroum_Memory
+        Donati_WM ~~ Haroum_Memory
+        Haroum_SDST ~~ a*Haroum_SDST
         a > .001
         
 ' 
@@ -108,12 +108,12 @@ EF$results
 
 # WM=SS
 
-cEF <- 'SS =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs + Donati_WM + Hatoum_Digit
-        RT =~ NA*Hatoum_SDST + Ibrahim_DSST
-        IC =~ NA*Ibrahim_Stroop3 + Hatoum_Memory
-        Donati_WM ~~ Hatoum_Memory
+cEF <- 'SS =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs + Donati_WM + Haroum_Digit
+        RT =~ NA*Haroum_SDST + Ibrahim_DSST
+        IC =~ NA*Ibrahim_Stroop3 + Haroum_Memory
+        Donati_WM ~~ Haroum_Memory
         SS ~~ 0*RT
-        Hatoum_SDST ~~ a*Hatoum_SDST
+        Haroum_SDST ~~ a*Haroum_SDST
         Ibrahim_DSST ~~ a*Ibrahim_DSST
         a > .001
         
@@ -124,12 +124,12 @@ EF$results
 
 # WM=IC
 
-cEF <- 'SS =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs
-        WM =~ NA*Donati_WM + Hatoum_Digit + Ibrahim_Stroop3 + Hatoum_Memory
-        RT =~ NA*Hatoum_SDST + Ibrahim_DSST
-        Donati_WM ~~ Hatoum_Memory
+cEF <- 'SS =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs
+        WM =~ NA*Donati_WM + Haroum_Digit + Ibrahim_Stroop3 + Haroum_Memory
+        RT =~ NA*Haroum_SDST + Ibrahim_DSST
+        Donati_WM ~~ Haroum_Memory
         SS ~~ 0*RT
-        Hatoum_SDST ~~ a*Hatoum_SDST
+        Haroum_SDST ~~ a*Haroum_SDST
         a > .001
         
 ' 
@@ -139,12 +139,13 @@ EF$results
 
 # Common factor with RT
 
-cEF <- 'SS =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs + Ibrahim_Stroop3 + Hatoum_Memory + Donati_WM + Hatoum_Digit
-        RT =~ NA*Hatoum_SDST + Ibrahim_DSST
+cEF <- 'SS =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs + Ibrahim_Stroop3 + Haroum_Memory + Donati_WM + Haroum_Digit
+        RT =~ NA*Haroum_SDST + Ibrahim_DSST
         SS ~~ 0*RT
-        Hatoum_SDST ~~ a*Hatoum_SDST
-        Ibrahim_DSST ~~ a*Ibrahim_DSST
+        Haroum_SDST ~~ a*Haroum_SDST
+        Ibrahim_DSST ~~ b*Ibrahim_DSST
         a > .001
+        b > .001
         
 ' 
 EF<-usermodel(LDSCoutput, estimation = "DWLS", model = cEF, CFIcalc = TRUE, std.lv = TRUE, imp_cov = FALSE)
@@ -152,15 +153,29 @@ EF$modelfit
 EF$results
 
 # Bifactor
-cEF <- 'SS =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs
-        WM =~ NA*Donati_WM + Hatoum_Digit
-        RT =~ NA*Hatoum_SDST + Ibrahim_DSST
-        IC =~ NA*Ibrahim_Stroop3 + Hatoum_Memory
-        cEF =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs + Donati_WM + Hatoum_Digit + Ibrahim_Stroop3 + Hatoum_Memory
-        Donati_WM ~~ Hatoum_Memory
+cEF <- 'SS =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs
+        WM =~ NA*Donati_WM + Haroum_Digit
+        RT =~ NA*Haroum_SDST + Ibrahim_DSST
+        IC =~ NA*Ibrahim_Stroop3 + Haroum_Memory
+        cEF =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs + Donati_WM + Haroum_Digit + Ibrahim_Stroop3 + Haroum_Memory
+        Donati_WM ~~ Haroum_Memory
         SS ~~ 0*RT
-        Hatoum_SDST ~~ a*Hatoum_SDST
+        Haroum_SDST ~~ a*Haroum_SDST
         a > .001
+        Haroum_Trails ~~ b*Haroum_Trails
+        b > .001
+        Ibrahim_DSST ~~ c*Ibrahim_DSST
+        c > .001
+        Haroum_Pairs ~~ d*Haroum_Pairs
+        d > .001
+        Ibrahim_Stroop3 ~~ e*Ibrahim_Stroop3
+        e > .001
+        Haroum_Memory ~~ f*Haroum_Memory
+        f > .001
+        Donati_WM ~~ g*Donati_WM
+        g > .001
+        Haroum_Digit ~~ h*Haroum_Digit
+        h > .001
         cEF ~~ 0*SS
         cEF ~~ 0*WM
         cEF ~~ 0*IC
@@ -171,26 +186,40 @@ cEF <- 'SS =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs
         RT ~~ 0*IC
         RT ~~ 0*WM
         
+        
 ' 
 EF<-usermodel(LDSCoutput, estimation = "DWLS", model = cEF, CFIcalc = TRUE, std.lv = TRUE, imp_cov = FALSE)
 EF$modelfit
 EF$results
 
 # Bifactor no Inhibition
-cEF <- 'SS =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs
-        WM =~ NA*Donati_WM + Hatoum_Digit
-        RT =~ NA*Hatoum_SDST + Ibrahim_DSST
-        cEF =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs + Donati_WM + Hatoum_Digit + Ibrahim_Stroop3 + Hatoum_Memory
-        Donati_WM ~~ Hatoum_Memory
+cEF <- 'SS =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs
+        WM =~ NA*Donati_WM + Haroum_Digit
+        RT =~ NA*Haroum_SDST + Ibrahim_DSST
+        cEF =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs + Donati_WM + Haroum_Digit + Ibrahim_Stroop3 + Haroum_Memory
+        Donati_WM ~~ Haroum_Memory
         SS ~~ 0*RT
-        Hatoum_SDST ~~ a*Hatoum_SDST
-        Ibrahim_DSST ~~ a*Ibrahim_DSST
+       Haroum_SDST ~~ a*Haroum_SDST
         a > .001
+        Haroum_Trails ~~ b*Haroum_Trails
+        b > .001
+        Ibrahim_DSST ~~ c*Ibrahim_DSST
+        c > .001
+        Haroum_Pairs ~~ d*Haroum_Pairs
+        d > .001
+        Ibrahim_Stroop3 ~~ e*Ibrahim_Stroop3
+        e > .001
+        Haroum_Memory ~~ f*Haroum_Memory
+        f > .001
+        Donati_WM ~~ g*Donati_WM
+        g > .001
+        Haroum_Digit ~~ h*Haroum_Digit
+        h > .001
         cEF ~~ 0*SS
         cEF ~~ 0*WM
         WM ~~ 0*SS
         RT ~~ 0*cEF
-        RT ~~ 0*WM
+        
         
 ' 
 EF<-usermodel(LDSCoutput, estimation = "DWLS", model = cEF, CFIcalc = TRUE, std.lv = TRUE, imp_cov = FALSE)
@@ -198,16 +227,29 @@ EF$modelfit
 EF$results
 
 # Bifactor, No Inhibition or Shifting
-
-cEF <- 'SS =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs + Donati_WM + Hatoum_Digit + Hatoum_Memory
-        WM =~ NA*Donati_WM + Hatoum_Digit
-        RT =~ NA*Hatoum_SDST + Ibrahim_DSST
-        Donati_WM ~~ Hatoum_Memory
-        SS ~~ 0*RT
-        Hatoum_SDST ~~ a*Hatoum_SDST
-        Hatoum_Digit ~~ a*Hatoum_Digit
+cEF <- 'WM =~ NA*Donati_WM + Haroum_Digit
+        RT =~ NA*Haroum_SDST + Ibrahim_DSST
+        cEF =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs + Donati_WM + Haroum_Digit + Ibrahim_Stroop3 + Haroum_Memory
+        Donati_WM ~~ Haroum_Memory
+        Haroum_SDST ~~ a*Haroum_SDST
         a > .001
-        WM ~~ 0*SS
+        Haroum_Trails ~~ b*Haroum_Trails
+        b > .001
+        Ibrahim_DSST ~~ c*Ibrahim_DSST
+        c > .001
+        Haroum_Pairs ~~ d*Haroum_Pairs
+        d > .001
+        Ibrahim_Stroop3 ~~ e*Ibrahim_Stroop3
+        e > .001
+        Haroum_Memory ~~ f*Haroum_Memory
+        f > .001
+        Donati_WM ~~ g*Donati_WM
+        g > .001
+        Haroum_Digit ~~ h*Haroum_Digit
+        h > .001
+        cEF ~~ 0*WM
+        RT ~~ 0*cEF
+        
         
 ' 
 EF<-usermodel(LDSCoutput, estimation = "DWLS", model = cEF, CFIcalc = TRUE, std.lv = TRUE, imp_cov = FALSE)
@@ -216,15 +258,30 @@ EF$results
 
 #Bifactor Without Digit-Specific
 
-cEF <- 'SS =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs
-        WM =~ NA*Donati_WM + Hatoum_Digit
-        cEF =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs + Donati_WM + Hatoum_Digit + Ibrahim_Stroop3 + Hatoum_Memory
-        Donati_WM ~~ Hatoum_Memory
-        Hatoum_SDST ~~ a*Hatoum_SDST
+cEF <- 'SS =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs
+        WM =~ NA*Donati_WM + Haroum_Digit
+        cEF =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs + Donati_WM + Haroum_Digit + Ibrahim_Stroop3 + Haroum_Memory
+        Donati_WM ~~ Haroum_Memory
+        Haroum_SDST ~~ a*Haroum_SDST
         a > .001
+        Haroum_Trails ~~ b*Haroum_Trails
+        b > .001
+        Ibrahim_DSST ~~ c*Ibrahim_DSST
+        c > .001
+        Haroum_Pairs ~~ d*Haroum_Pairs
+        d > .001
+        Ibrahim_Stroop3 ~~ e*Ibrahim_Stroop3
+        e > .001
+        Haroum_Memory ~~ f*Haroum_Memory
+        f > .001
+        Donati_WM ~~ g*Donati_WM
+        g > .001
+        Haroum_Digit ~~ h*Haroum_Digit
+        h > .001
         cEF ~~ 0*SS
         cEF ~~ 0*WM
         WM ~~ 0*SS
+        
         
 ' 
 EF<-usermodel(LDSCoutput, estimation = "DWLS", model = cEF, CFIcalc = TRUE, std.lv = TRUE, imp_cov = FALSE)
@@ -236,9 +293,9 @@ EF$results
 N<-c(93024,81701,84125,81701,162335,12866,32070,4611)
 se.logit <-c(F,F,F,F,F,F,F,F)
 Hail<-c(F,F,F,F,F,T,T,F)
-files <- c('Hatoum_Trails.txt','Hatoum_Pairs.txt','Hatoum_SDST.txt','Hatoum_Digit.txt','Hatoum_Memory.txt','Ibrahim_Stroop3.txt','Ibrahim_DSST.txt','Donati_WM.txt')
+files <- c('Haroum_Trails.txt','Haroum_Pairs.txt','Haroum_SDST.txt','Haroum_Digit.txt','Haroum_Memory.txt','Ibrahim_Stroop3.txt','Ibrahim_DSST.txt','Donati_WM.txt')
 ref <- "reference.1000G.maf.0.005.txt"
-trait.names<-c('Hatoum_Trails','Hatoum_Pairs','Hatoum_SDST','Hatoum_Digit','Hatoum_Memory','Ibrahim_Stroop3','Ibrahim_DSST','Donati_WM')
+trait.names<-c('Haroum_Trails','Haroum_Pairs','Haroum_SDST','Haroum_Digit','Haroum_Memory','Ibrahim_Stroop3','Ibrahim_DSST','Donati_WM')
 
 EF_sumstats <- sumstats(files=files,ref=ref,trait.names=trait.names,se.logit=se.logit,OLS = NULL,linprob=Hail,N=N,betas=NULL, info.filter=.6, maf.filter=0.01,keep.indel=FALSE,parallel=FALSE,cores=NULL)
 save(EF_sumstats,file="EF_sumstats.RData")
@@ -251,36 +308,34 @@ registerDoParallel(cl)
 clusterEvalQ(cl, .libPaths("C:/Program Files/R/R-4.2.3/library"))
 clusterEvalQ(cl, library(doParallel))
 
+CommonFactors<-commonfactorGWAS(covstruc = LDSCoutput, SNPs = EF_sumstats, parallel = TRUE, cores=12, toler=1e-60, smooth_check=TRUE)
+save(CorrelatedFactors,file="CorrelatedFactors.RData")
 
-cEF <- 'SS =~ NA*Hatoum_SDST + Hatoum_Trails + Ibrahim_DSST + Hatoum_Pairs + Ibrahim_Stroop3 + Hatoum_Memory
-        WM =~ NA*Donati_WM + Hatoum_Digit
-        RT =~ NA*Hatoum_SDST + Ibrahim_DSST
-        Donati_WM ~~ Hatoum_Memory
+
+cEF <- 'SS =~ NA*Haroum_SDST + Haroum_Trails + Ibrahim_DSST + Haroum_Pairs + Ibrahim_Stroop3 + Haroum_Memory
+        WM =~ NA*Donati_WM + Haroum_Digit
+        RT =~ NA*Haroum_SDST + Ibrahim_DSST
+        Donati_WM ~~ Haroum_Memory
         SS ~~ 0*RT
-        Hatoum_SDST ~~ a*Hatoum_SDST
+        Haroum_SDST ~~ a*Haroum_SDST
         a > .001
-        Hatoum_Trails ~~ b*Hatoum_Trails
+        Haroum_Trails ~~ b*Haroum_Trails
         b > .001
         Ibrahim_DSST ~~ c*Ibrahim_DSST
         c > .001
-        Hatoum_Pairs ~~ d*Hatoum_Pairs
+        Haroum_Pairs ~~ d*Haroum_Pairs
         d > .001
         Ibrahim_Stroop3 ~~ e*Ibrahim_Stroop3
         e > .001
-        Hatoum_Memory ~~ f*Hatoum_Memory
+        Haroum_Memory ~~ f*Haroum_Memory
         f > .001
         Donati_WM ~~ g*Donati_WM
         g > .001
-        Hatoum_Digit ~~ h*Hatoum_Digit
+        Haroum_Digit ~~ h*Haroum_Digit
         h > .001
-        SS ~~ i*SS
-        i > .001
-        WM ~~ j*WM
-        j > .001
-        RT ~~ k*RT
-        k > .001
-        SS ~ SNP
-        WM ~ SNP
+        SNP ~ SS
+        SNP ~ WM
+        SNP ~ RT
 
 ' 
 
