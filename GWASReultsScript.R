@@ -2,21 +2,20 @@ library(data.table)
 library(GenomicSEM)
 
 setwd("~/SummaryStatistics/")
-load("~/SummaryStatistics/CommonFactor/CommonFactor.RData")
 load("~/SummaryStatistics/EFGSEMResults/CorrelatedFactors.RData")
 
-EFResults <- CommonFactor
-SSResults <- CorrelatedFactors[[1]]
+EFResults <- CorrelatedFactors[[1]]
 WMResults <- CorrelatedFactors[[2]]
 
 EFResultsClean <- as.data.frame(filter(EFResults, EFResults$Z_smooth < 1))
-SSResultsClean <- as.data.frame(filter(SSResults, SSResults$Z_smooth < 1))  
-SSResultsClean <- SSResultsClean[- grep('lavaan WARNING:*',SSResultsClean$warning),]
+EFResultsClean <- as.data.frame(filter(EFResultsClean, EFResultsClean$Q_SNP_pval > 5.0e-08))
+#EFResultsClean <- EFResultsClean[- grep('lavaan WARNING:*',EFResultsClean$warning),]
 WMResultsClean <- as.data.frame(filter(WMResults, WMResults$Z_smooth < 1))
-WMResultsClean <- WMResultsClean[- grep('lavaan WARNING:*',WMResultsClean$warning),]
+WMResultsClean <- as.data.frame(filter(WMResultsClean, WMResultsClean$Q_SNP_pval > 5.0e-08))
+#WMResultsClean <- WMResultsClean[- grep('lavaan WARNING:*',WMResultsClean$warning),]
 
 
-CorrelatedFactorsClean <- list(SSResultsClean, WMResultsClean)
+CorrelatedFactorsClean <- list(EFResultsClean, WMResultsClean)
 save(CorrelatedFactorsClean,file='CorrelatedFactorsClean.RData')
 
 load("~/SummaryStatistics/CorrelatedFactorsClean.RData")
@@ -24,33 +23,35 @@ load("~/SummaryStatistics/CorrelatedFactorsClean.RData")
 ##Calculate Effective Sample Size for Factor 1
 #restrict to MAF of 40% and 10%
 
-EFResultsClean<-subset(EFResultsClean, EFResultsClean$MAF <= .4 & EFResultsClean$MAF >= .1)
-CorrelatedFactorsSub1<-subset(SSResultsClean, SSResultsClean$MAF <= .4 & SSResultsClean$MAF >= .1)
+CorrelatedFactorsSub1<-subset(EFResultsClean, EFResultsClean$MAF <= .4 & EFResultsClean$MAF >= .1)
 CorrelatedFactorsSub2<-subset(WMResultsClean, WMResultsClean$MAF <= .4 & WMResultsClean$MAF >= .1)
 
-EFResultsClean <- na.omit(EFResultsClean)
-N_hat_EF<-mean(1/((2*EFResultsClean$MAF*(1-EFResultsClean$MAF))*EFResultsClean$se_c^2))
-
+CorrelatedFactorsSub1 <- CorrelatedFactorsSub1[,-20:-22]
 CorrelatedFactorsSub1 <- na.omit(CorrelatedFactorsSub1)
-N_hat_SS<-mean(1/((2*CorrelatedFactorsSub1$MAF*(1-CorrelatedFactorsSub1$MAF))*CorrelatedFactorsSub1$SE^2))
+N_hat_EF<-mean(1/((2*CorrelatedFactorsSub1$MAF*(1-CorrelatedFactorsSub1$MAF))*CorrelatedFactorsSub1$SE^2))
 
+CorrelatedFactorsSub2 <- CorrelatedFactorsSub2[,-20:-22]
 CorrelatedFactorsSub2 <- na.omit(CorrelatedFactorsSub2)
 N_hat_WM<-mean(1/((2*CorrelatedFactorsSub2$MAF*(1-CorrelatedFactorsSub2$MAF))*CorrelatedFactorsSub2$SE^2))
 
-colnames(EFResultsClean)[14] <- 'P'
-colnames(CorrelatedFactorsSub1)[15] <- 'P'
-colnames(CorrelatedFactorsSub2)[15] <- 'P'
+colnames(EFResultsClean)[15] <- 'P'
+colnames(WMResultsClean)[15] <- 'P'
 
-write.table(EFResultsClean, file = 'CommonFactor.txt', quote = FALSE, row.names = FALSE)
-write.table(CorrelatedFactorsSub1, file = 'CorrelatedFactorsSub1.txt')
-write.table(CorrelatedFactorsSub2, file = 'CorrelatedFactorsSub2.txt')
+write.table(EFResultsClean, file = 'CorrelatedFactorsSub1.txt')
+write.table(WMResultsClean, file = 'CorrelatedFactorsSub2.txt')
+
+EFResultsClean <- EFResultsClean[,-11]
+WMResultsClean <- WMResultsClean[,-11]
+
+write.table(EFResultsClean, file = 'CommonEF.txt', quote = FALSE, row.names = FALSE)
+write.table(WMResultsClean , file = 'WMSumstats.txt', quote = FALSE, row.names = FALSE)
 
 
 # Munge
-files<-c('CommonFactor.txt','CorrelatedFactorsSub1.txt','CorrelatedFactorsSub2.txt')
+files<-c('CorrelatedFactorsSub1.txt','CorrelatedFactorsSub2.txt')
 hm3<-"C:/Users/lucas/Documents/SummaryStatistics/reference.1000G.maf.0.005.txt"
-trait.names<-c('Perry_EF','Perry_SS','Perry_WM')
-N=c(4409915,77687,43156)
+trait.names<-c('Perry_EF','Perry_WM')
+N=c(266412,28152)
 info.filter=0.9
 maf.filter=0.01
 
@@ -99,258 +100,175 @@ munge(files=files,hm3=hm3,trait.names=trait.names,N=N,info.filter=info.filter,ma
 
 setwd("~/SummaryStatistics/")
 
-traits<-c('Perry_EF.sumstats.gz','Perry_SS.sumstats.gz','Perry_WM.sumstats.gz','Haroum_Full.sumstats.gz','Haroum_Reaction.sumstats.gz','Okbay_EA.sumstats.gz','Demange_CP.sumstats.gz','PGC_ADHD.sumstats.gz','PGC_Autism.sumstats.gz','PGC_SCZ.sumstats.gz','PGC_BiP.sumstats.gz','PGC_Anx.sumstats.gz','PGC_AN.sumstats.gz','PGC_MDD.sumstats.gz','PGC_OCD.sumstats.gz','PGC_TS.sumstats.gz')
-sample.prev<-c(NA,NA,NA,NA,NA,NA,NA,NA,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5)
-population.prev<-c(NA,NA,NA,NA,NA,NA,NA,NA,0.05,0.012,0.01,0.02,0.1,0.01,0.302,0.025,0.008)
+traits<-c('Perry_EF.sumstats.gz','Perry_WM.sumstats.gz','Haroum_Full.sumstats.gz','Haroum_Reaction.sumstats.gz','Okbay_EA.sumstats.gz','Demange_CP.sumstats.gz','PGC_ADHD.sumstats.gz','PGC_Autism.sumstats.gz','PGC_SCZ.sumstats.gz','PGC_BiP.sumstats.gz','PGC_Anx.sumstats.gz','PGC_AN.sumstats.gz','PGC_MDD.sumstats.gz','PGC_OCD.sumstats.gz','PGC_TS.sumstats.gz')
+sample.prev<-c(NA,NA,NA,NA,NA,NA,NA,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5)
+population.prev<-c(NA,NA,NA,NA,NA,NA,NA,0.05,0.012,0.01,0.02,0.1,0.01,0.302,0.025,0.008)
 ld<-"eur_w_ld_chr/"
 wld<-"eur_w_ld_chr/"
-trait.names<-c('Perry_EF','Perry_SS','Perry_WM','Haroum_Full','Haroum_Reaction','Okbay_EA','Demange_CP','PGC_ADHD','PGC_Autism','PGC_SCZ','PGC_BiP','PGC_Anx','PGC_AN','PGC_MDD','PGC_OCD','PGC_TS')
+trait.names<-c('Perry_EF','Perry_WM','Haroum_Full','Haroum_Reaction','Okbay_EA','Demange_CP','PGC_ADHD','PGC_Autism','PGC_SCZ','PGC_BiP','PGC_Anx','PGC_AN','PGC_MDD','PGC_OCD','PGC_TS')
 
 LDSCoutput<-ldsc(traits=traits,sample.prev=sample.prev,population.prev=population.prev,ld=ld,wld=wld,trait.names=trait.names)
 save(LDSCoutput,file="PGCLDSCoutput.RData")
 load("C:/Users/lucas/Documents/SummaryStatistics/PGCLDSCoutput.RData")
 
 
-
-SSmodel<-'Okbay_EA ~ Perry_SS + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_SS
-         Haroum_Reaction ~ Perry_SS
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=SSmodel)
-output$results
-
-SSmodel<-'PGC_ADHD ~ Perry_SS + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_SS
-         Haroum_Reaction ~ Perry_SS
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=SSmodel)
-output$results
-
-SSmodel<-'PGC_Autism ~ Perry_SS + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_SS
-         Haroum_Reaction ~ Perry_SS
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=SSmodel)
-output$results
-
-SSmodel<-'PGC_SCZ ~ Perry_SS + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_SS
-         Haroum_Reaction ~ Perry_SS
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=SSmodel)
-output$results
-
-
-SSmodel<-'PGC_BiP ~ Perry_SS + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_SS
-         Haroum_Reaction ~ Perry_SS
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=SSmodel)
-output$results
-
-SSmodel<-'PGC_Anx ~ Perry_SS + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_SS
-         Haroum_Reaction ~ Perry_SS
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=SSmodel)
-output$results
-
-SSmodel<-'PGC_AN ~ Perry_SS + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_SS
-         Haroum_Reaction ~ Perry_SS
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=SSmodel)
-output$results
-
-SSmodel<-'PGC_MDD ~ Perry_SS + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_SS
-         Haroum_Reaction ~ Perry_SS
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=SSmodel)
-output$results
-
-SSmodel<-'PGC_OCD ~ Perry_SS + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_SS
-         Haroum_Reaction ~ Perry_SS
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=SSmodel)
-output$results
-
-SSmodel<-'PGC_TS ~ Perry_SS + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_SS
-         Haroum_Reaction ~ Perry_SS
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=SSmodel)
-output$results
-
-
-
-WMmodel<-'Okbay_EA ~ Perry_WM + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_WM
-         Haroum_Reaction ~ Perry_WM
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=WMmodel)
-output$results
-
-WMmodel<-'PGC_ADHD ~ Perry_WM + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_WM
-         Haroum_Reaction ~ Perry_WM
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=WMmodel)
-output$results
-
-WMmodel<-'PGC_Autism ~ Perry_WM + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_WM
-         Haroum_Reaction ~ Perry_WM
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=WMmodel)
-output$results
-
-WMmodel<-'PGC_SCZ ~ Perry_WM + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_WM
-         Haroum_Reaction ~ Perry_WM
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=WMmodel)
-output$results
-
-WMmodel<-'PGC_BiP ~ Perry_WM + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_WM
-         Haroum_Reaction ~ Perry_WM
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=WMmodel)
-output$results
-
-WMmodel<-'PGC_Anx ~ Perry_WM + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_WM
-         Haroum_Reaction ~ Perry_WM
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=WMmodel)
-output$results
-
-WMmodel<-'PGC_AN ~ Perry_WM + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_WM
-         Haroum_Reaction ~ Perry_WM
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=WMmodel)
-output$results
-
-WMmodel<-'PGC_MDD ~ Perry_WM + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_WM
-         Haroum_Reaction ~ Perry_WM
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=WMmodel)
-output$results
-
-WMmodel<-'PGC_OCD ~ Perry_WM + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_WM
-         Haroum_Reaction ~ Perry_WM
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=WMmodel)
-output$results
-
-WMmodel<-'PGC_TS ~ Perry_WM + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_WM
-         Haroum_Reaction ~ Perry_WM
-         '
-
-output<-usermodel(LDSCoutput,estimation="DWLS",model=WMmodel)
-output$results
-
-
-EFmodel<-'Okbay_EA ~ Perry_EF + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_EF
-         Haroum_Reaction ~ Perry_EF
+EFmodel<-'Okbay_EA ~ Perry_EF + Haroum_Int + Haroum_Reaction
+          Okbay_EA ~ Haroum_Int + Haroum_Reaction
+         
          '
 
 output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
 output$results
 
-EFmodel<-'PGC_ADHD ~ Perry_EF + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_EF
-         Haroum_Reaction ~ Perry_EF
+EFmodel<-'PGC_Autism ~ Perry_EF + Haroum_Int + Haroum_Reaction
+          PGC_Autism ~ Haroum_Int + Haroum_Reaction
+         
          '
 
 output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
 output$results
 
-EFmodel<-'PGC_Autism ~ Perry_EF + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_EF
-         Haroum_Reaction ~ Perry_EF
+EFmodel<-'PGC_ADHD ~ Perry_EF + Haroum_Int + Haroum_Reaction
+          PGC_ADHD ~ Haroum_Int + Haroum_Reaction
+         
          '
 
 output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
 output$results
 
-EFmodel<-'PGC_SCZ ~ Perry_EF + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_EF
-         Haroum_Reaction ~ Perry_EF
+EFmodel<-'PGC_SCZ ~ Perry_EF + Haroum_Int + Haroum_Reaction
+          PGC_SCZ ~ Haroum_Int + Haroum_Reaction
+         
          '
 
 output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
 output$results
 
-EFmodel<-'PGC_BiP ~ Perry_EF + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_EF
-         Haroum_Reaction ~ Perry_EF
+EFmodel<-'PGC_BiP ~ Perry_EF + Haroum_Int + Haroum_Reaction
+          PGC_BiP ~ Haroum_Int + Haroum_Reaction
+         
          '
 
 output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
 output$results
 
-EFmodel<-'PGC_Anx ~ Perry_EF + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_EF
-         Haroum_Reaction ~ Perry_EF
+EFmodel<-'PGC_Anx ~ Perry_EF + Haroum_Int + Haroum_Reaction
+          PGC_Anx ~ Haroum_Int + Haroum_Reaction
+         
          '
 
 output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
 output$results
 
-EFmodel<-'PGC_AN ~ Perry_EF + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_EF
-         Haroum_Reaction ~ Perry_EF
+EFmodel<-'PGC_AN ~ Perry_EF + Haroum_Int + Haroum_Reaction
+          PGC_AN ~ Haroum_Int + Haroum_Reaction
+         
          '
 
 output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
 output$results
 
-EFmodel<-'PGC_MDD ~ Perry_EF + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_EF
-         Haroum_Reaction ~ Perry_EF
+
+EFmodel<-'PGC_MDD ~ Perry_EF + Haroum_Int + Haroum_Reaction
+          PGC_MDD ~ Haroum_Int + Haroum_Reaction
+         
          '
 
 output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
 output$results
 
-EFmodel<-'PGC_OCD ~ Perry_EF + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_EF
-         Haroum_Reaction ~ Perry_EF
+EFmodel<-'PGC_OCD ~ Perry_EF + Haroum_Int + Haroum_Reaction
+          PGC_OCD ~ Haroum_Int + Haroum_Reaction
+         
          '
 
 output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
 output$results
 
-EFmodel<-'PGC_TS ~ Perry_EF + Demange_CP + Haroum_Reaction
-         Demange_CP ~ Perry_EF
-         Haroum_Reaction ~ Perry_EF
+EFmodel<-'PGC_TS ~ Perry_EF + Haroum_Int + Haroum_Reaction
+          PGC_TS ~ Haroum_Int + Haroum_Reaction
+         
+         '
+
+output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
+output$results
+
+EFmodel<-'Okbay_EA ~ Perry_WM + Haroum_Int + Haroum_Reaction
+          Okbay_EA ~ Haroum_Int + Haroum_Reaction
+         
+         '
+
+output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
+output$results
+
+EFmodel<-'PGC_Autism ~ Perry_WM + Haroum_Int + Haroum_Reaction
+          PGC_Autism ~ Haroum_Int + Haroum_Reaction
+         
+         '
+
+output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
+output$results
+
+EFmodel<-'PGC_ADHD ~ Perry_WM + Haroum_Int + Haroum_Reaction
+          PGC_ADHD ~ Haroum_Int + Haroum_Reaction
+         
+         '
+
+output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
+output$results
+
+EFmodel<-'PGC_SCZ ~ Perry_WM + Haroum_Int + Haroum_Reaction
+          PGC_SCZ ~ Haroum_Int + Haroum_Reaction
+         
+         '
+
+output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
+output$results
+
+EFmodel<-'PGC_BiP ~ Perry_WM + Haroum_Int + Haroum_Reaction
+          PGC_BiP ~ Haroum_Int + Haroum_Reaction
+         
+         '
+
+output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
+output$results
+
+EFmodel<-'PGC_Anx ~ Perry_WM + Haroum_Int + Haroum_Reaction
+          PGC_Anx ~ Haroum_Int + Haroum_Reaction
+         
+         '
+
+output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
+output$results
+
+EFmodel<-'PGC_AN ~ Perry_WM + Haroum_Int + Haroum_Reaction
+          PGC_AN ~ Haroum_Int + Haroum_Reaction
+         
+         '
+
+output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
+output$results
+
+
+EFmodel<-'PGC_MDD ~ Perry_WM + Haroum_Int + Haroum_Reaction
+          PGC_MDD ~ Haroum_Int + Haroum_Reaction
+         
+         '
+
+output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
+output$results
+
+EFmodel<-'PGC_OCD ~ Perry_WM + Haroum_Int + Haroum_Reaction
+          PGC_OCD ~ Haroum_Int + Haroum_Reaction
+         
+         '
+
+output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
+output$results
+
+EFmodel<-'PGC_TS ~ Perry_WM + Haroum_Int + Haroum_Reaction
+          PGC_TS ~ Haroum_Int + Haroum_Reaction
+         
          '
 
 output<-usermodel(LDSCoutput,estimation="DWLS",model=EFmodel)
